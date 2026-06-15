@@ -6,7 +6,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Enable CORS so your Hugging Face Space can talk to this server
-app.use(cors());
+app.use(cors({ origin: [
+  'https://hhhtripleh-mm-world-cup-wheel.hf.space',
+  'http://localhost:3000']
+  }));
 app.use(express.json());
 
 // Connect to Railway's PostgreSQL database using the environment variable
@@ -35,7 +38,7 @@ const initDb = async () => {
 initDb().catch(err => console.error("DB Init Error:", err));
 
 // Route to GET the current raffle state
-app.get('/api/raffle', async (req, res) => {
+.get('/api/raffle', async (req, res) => {
   try {
     const result = await pool.query('SELECT data FROM raffle_data WHERE id = 1');
     res.json(result.rows[0].data);
@@ -45,7 +48,7 @@ app.get('/api/raffle', async (req, res) => {
 });
 
 // Route to UPDATE/POST the new raffle state
-app.post('/api/raffle', async (req, res) => {
+.post('/api/raffle', async (req, res) => {
   try {
     const newData = req.body;
     newData.lastUpdated = new Date().toISOString();
@@ -59,6 +62,6 @@ app.post('/api/raffle', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
