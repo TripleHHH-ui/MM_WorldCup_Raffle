@@ -1,2007 +1,226 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KPF World Cup 2026 Raffle</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-/* ============================================================
-   CSS CUSTOM PROPERTIES
-   ============================================================ */
-:root {
-  --bg:           #0a0e1a;
-  --card:         #141824;
-  --card2:        #1a2035;
-  --border:       #2a3050;
-  --gold:         #f0c040;
-  --gold-dim:     #b89020;
-  --text:         #e8eaf0;
-  --text-dim:     #8892b0;
-  --text-muted:   #4a5580;
-  --green:        #22c55e;
-  --red:          #ef4444;
-  --amber:        #f59e0b;
-  --orange:       #f97316;
-
-  --conf-conmebol: #1a9e5c;
-  --conf-uefa:     #1a4fa0;
-  --conf-caf:      #c8a020;
-  --conf-afc:      #c83020;
-  --conf-concacaf: #8020c8;
-  --conf-ofc:      #20a0c8;
-
-  --radius:    12px;
-  --radius-sm: 8px;
-  --shadow:    0 4px 24px rgba(0,0,0,0.5);
-  --transition: all 0.22s ease;
-}
-
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* ============================================================
-   PITCH PATTERN BACKGROUND
-   ============================================================ */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 60px,
-      rgba(255,255,255,0.015) 60px, rgba(255,255,255,0.015) 61px),
-    repeating-linear-gradient(90deg, transparent, transparent 60px,
-      rgba(255,255,255,0.015) 60px, rgba(255,255,255,0.015) 61px);
-  pointer-events: none;
-  z-index: 0;
-}
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(240,192,64,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(26,79,160,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(26,158,92,0.10) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ============================================================
-   LAYOUT WRAPPER
-   ============================================================ */
-#app {
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px 60px;
-}
-
-/* ============================================================
-   TOP BAR
-   ============================================================ */
-#topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 0 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 32px;
-  gap: 12px;
-}
-#logo {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 2rem;
-  color: var(--gold);
-  letter-spacing: 0.08em;
-  line-height: 1;
-  flex-shrink: 0;
-}
-#logo span {
-  display: block;
-  font-size: 0.55rem;
-  letter-spacing: 0.25em;
-  color: var(--text-dim);
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-#topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-#conn-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  border: 1px solid transparent;
-  transition: var(--transition);
-}
-#conn-badge.live    { background: rgba(34,197,94,0.15);  border-color: rgba(34,197,94,0.3);  color: var(--green);  }
-#conn-badge.sync    { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: var(--amber);  }
-#conn-badge.offline { background: rgba(249,115,22,0.15); border-color: rgba(249,115,22,0.3); color: var(--orange); }
-#conn-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-#conn-badge.live #conn-dot    { animation: pulse-green 2s infinite; }
-#conn-badge.sync #conn-dot    { animation: pulse-amber 1s infinite; }
-#conn-badge.offline #conn-dot { background: var(--orange); }
-@keyframes pulse-green {
-  0%,100% { opacity:1; transform:scale(1);   }
-  50%     { opacity:0.5; transform:scale(1.3); }
-}
-@keyframes pulse-amber {
-  0%,100% { opacity:1;   }
-  50%     { opacity:0.4; }
-}
-#admin-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition: var(--transition);
-  font-family: 'Inter', sans-serif;
-}
-#admin-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-/* ============================================================
-   HERO
-   ============================================================ */
-#hero {
-  text-align: center;
-  margin-bottom: 36px;
-}
-#hero h1 {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(2.4rem, 7vw, 5rem);
-  letter-spacing: 0.06em;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--gold) 0%, #fff8e0 50%, var(--gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-#hero p {
-  color: var(--text-dim);
-  font-size: 0.95rem;
-  margin-top: 8px;
-  letter-spacing: 0.04em;
-}
-#teams-remaining {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 4px 16px;
-  border-radius: 999px;
-  background: rgba(240,192,64,0.1);
-  border: 1px solid rgba(240,192,64,0.25);
-  color: var(--gold);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-/* ============================================================
-   MAIN GRID
-   ============================================================ */
-#main-grid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 24px;
-  align-items: start;
-}
-@media (max-width: 900px) {
-  #main-grid { grid-template-columns: 1fr; }
-}
-
-/* ============================================================
-   CARD BASE
-   ============================================================ */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow);
-}
-.card-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.1rem;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.card-title i { color: var(--gold); font-size: 0.9rem; }
-
-/* ============================================================
-   ENTRY CARD
-   ============================================================ */
-#entry-card { margin-bottom: 24px; }
-#entry-form {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-#nickname-input {
-  flex: 1;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  transition: var(--transition);
-}
-#nickname-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(240,192,64,0.15);
-}
-#nickname-input::placeholder { color: var(--text-muted); }
-#spin-btn {
-  background: linear-gradient(135deg, var(--gold) 0%, #d4a820 100%);
-  color: #0a0e1a;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 14px 28px;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.3rem;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-#spin-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(240,192,64,0.35);
-}
-#spin-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-#spin-btn.spinning {
-  background: linear-gradient(135deg, #555 0%, #333 100%);
-  color: #aaa;
-}
-#entry-msg {
-  margin-top: 10px;
-  min-height: 22px;
-  font-size: 0.85rem;
-}
-#entry-msg.info    { color: var(--text-dim); }
-#entry-msg.success { color: var(--green); }
-#entry-msg.error   { color: var(--red); }
-#entry-msg.warning { color: var(--amber); }
-#save-status {
-  margin-top: 6px;
-  min-height: 20px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-#save-status.saving  { color: var(--amber); }
-#save-status.saved   { color: var(--green); }
-#save-status.pending { color: var(--orange); }
-
-#already-drew {
-  display: none;
-  background: rgba(240,192,64,0.08);
-  border: 1px solid rgba(240,192,64,0.25);
-  border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  margin-top: 12px;
-}
-#already-drew .ad-label { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 4px; }
-#already-drew .ad-team  { font-family: 'Bebas Neue', cursive; font-size: 1.6rem; letter-spacing: 0.06em; color: var(--gold); }
-#already-drew .ad-conf  { font-size: 0.8rem; color: var(--text-dim); margin-top: 2px; }
-
-/* ============================================================
-   WHEEL CARD
-   ============================================================ */
-#wheel-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#wheel-wrap {
-  position: relative;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-}
-#wheel-canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 50%;
-  box-shadow: 0 0 60px rgba(240,192,64,0.12), 0 0 120px rgba(240,192,64,0.05);
-}
-#wheel-pointer {
-  position: absolute;
-  right: -14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-top: 16px solid transparent;
-  border-bottom: 16px solid transparent;
-  border-right: 28px solid var(--gold);
-  filter: drop-shadow(0 0 6px rgba(240,192,64,0.6));
-  z-index: 2;
-}
-
-/* ============================================================
-   RIGHT COLUMN
-   ============================================================ */
-#right-col { display: flex; flex-direction: column; gap: 20px; }
-
-/* ============================================================
-   LOCKED BANNER
-   ============================================================ */
-#locked-banner {
-  display: none;
-  background: rgba(239,68,68,0.12);
-  border: 1px solid rgba(239,68,68,0.3);
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  color: var(--red);
-  font-size: 0.88rem;
-  font-weight: 600;
-  text-align: center;
-  letter-spacing: 0.03em;
-  margin-bottom: 16px;
-}
-
-/* ============================================================
-   RESULTS CARD
-   ============================================================ */
-#results-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-#results-header .card-title { margin-bottom: 0; }
-#poll-indicator {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-#poll-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--text-muted);
-}
-#poll-dot.spinning { animation: blink 0.8s linear infinite; }
-@keyframes blink {
-  0%,100% { opacity:1; }
-  50%     { opacity:0.2; }
-}
-#results-table-wrap {
-  max-height: 400px;
-  overflow-y: auto;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-}
-#results-table-wrap::-webkit-scrollbar { width: 4px; }
-#results-table-wrap::-webkit-scrollbar-track { background: transparent; }
-#results-table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-#results-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-}
-#results-table thead th {
-  background: var(--card2);
-  padding: 9px 10px;
-  text-align: left;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-#results-table tbody tr {
-  border-top: 1px solid var(--border);
-  transition: background 0.15s;
-}
-#results-table tbody tr:hover { background: rgba(255,255,255,0.03); }
-#results-table tbody td {
-  padding: 9px 10px;
-  color: var(--text);
-  vertical-align: middle;
-}
-#results-table tbody td:first-child { color: var(--text-muted); font-size: 0.72rem; }
-.conf-dot {
-  display: inline-block;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  margin-right: 5px;
-  vertical-align: middle;
-  flex-shrink: 0;
-}
-.conf-cell {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-.pending-row td { opacity: 0.65; }
-.pending-badge { font-size: 0.65rem; color: var(--amber); margin-left: 4px; }
-#results-empty {
-  padding: 28px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-/* ============================================================
-   LEGEND CARD
-   ============================================================ */
-.legend-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.78rem;
-  color: var(--text-dim);
-}
-.legend-swatch {
-  width: 12px; height: 12px;
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-.legend-count {
-  margin-left: auto;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-/* ============================================================
-   REVEAL OVERLAY
-   ============================================================ */
-#reveal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(5,8,20,0.96);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-#reveal-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-#reveal-confetti {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-#reveal-inner {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 40px;
-  max-width: 600px;
-}
-#reveal-label {
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
-}
-#reveal-overlay.active #reveal-label { opacity: 1; transform: translateY(0); }
-#reveal-nickname {
-  font-size: 1.1rem;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
-}
-#reveal-overlay.active #reveal-nickname { opacity: 1; transform: translateY(0); }
-#reveal-conf-badge {
-  display: inline-block;
-  padding: 4px 18px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s;
-}
-#reveal-overlay.active #reveal-conf-badge { opacity: 1; transform: scale(1); }
-#reveal-team {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(3rem, 10vw, 6rem);
-  letter-spacing: 0.04em;
-  line-height: 1;
-  color: var(--gold);
-  opacity: 0;
-  transform: scale(0.6) translateY(30px);
-  transition: opacity 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.65s,
-              transform 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.65s;
-  text-shadow: 0 0 40px rgba(240,192,64,0.4);
-}
-#reveal-overlay.active #reveal-team { opacity: 1; transform: scale(1) translateY(0); }
-#reveal-close {
-  margin-top: 36px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 10px 32px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 0.88rem;
-  font-family: 'Inter', sans-serif;
-  opacity: 0;
-  transition: opacity 0.5s ease 1.2s, border-color 0.22s ease, color 0.22s ease;
-}
-#reveal-overlay.active #reveal-close { opacity: 1; }
-#reveal-close:hover { border-color: var(--gold); color: var(--gold); }
-
-/* ============================================================
-   CONFETTI CANVAS
-   ============================================================ */
-#confetti-canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1001;
-  display: none;
-}
-
-/* ============================================================
-   ADMIN MODAL
-   ============================================================ */
-#admin-modal-bg {
-  position: fixed;
-  inset: 0;
-  background: rgba(5,8,20,0.85);
-  z-index: 900;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-#admin-modal-bg.open { display: flex; }
-#admin-modal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px;
-  width: 100%;
-  max-width: 460px;
-  box-shadow: var(--shadow);
-  position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-#admin-modal h2 {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.6rem;
-  letter-spacing: 0.1em;
-  color: var(--gold);
-  margin-bottom: 20px;
-}
-#admin-close {
-  position: absolute;
-  top: 16px; right: 16px;
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: var(--transition);
-  padding: 4px;
-}
-#admin-close:hover { color: var(--gold); }
-#admin-login label {
-  display: block;
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-#admin-pw-input {
-  width: 100%;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  color: var(--text);
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  transition: var(--transition);
-  margin-bottom: 10px;
-}
-#admin-pw-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(240,192,64,0.15); }
-#admin-pw-error { color: var(--red); font-size: 0.82rem; min-height: 20px; margin-bottom: 8px; }
-#admin-pw-submit {
-  width: 100%;
-  background: linear-gradient(135deg, var(--gold) 0%, #d4a820 100%);
-  color: #0a0e1a;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.1rem;
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  transition: var(--transition);
-}
-#admin-pw-submit:hover { opacity: 0.9; transform: translateY(-1px); }
-#admin-panel { display: none; }
-#admin-panel.visible { display: block; }
-.admin-section {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-.admin-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.admin-section-title {
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-.admin-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 11px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: var(--text);
-  font-size: 0.9rem;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: var(--transition);
-  text-align: left;
-  margin-bottom: 8px;
-}
-.admin-btn:last-child { margin-bottom: 0; }
-.admin-btn:hover { border-color: var(--gold); color: var(--gold); }
-.admin-btn.danger:hover { border-color: var(--red); color: var(--red); }
-.admin-btn i { width: 16px; text-align: center; }
-#admin-lock-btn.locked { color: var(--red); border-color: rgba(239,68,68,0.4); }
-#admin-lock-btn.locked:hover { border-color: var(--red); }
-#remove-select {
-  width: 100%;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  color: var(--text);
-  font-size: 0.88rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-#remove-select:focus { border-color: var(--gold); }
-#admin-status {
-  margin-top: 12px;
-  min-height: 20px;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  text-align: center;
-}
-#admin-status.ok  { color: var(--green); }
-#admin-status.err { color: var(--red); }
-
-/* ============================================================
-   SYNC CONFIG SECTION (inside admin)
-   ============================================================ */
-#sync-config-section input[type="text"] {
-  width: 100%;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  color: var(--text);
-  font-size: 0.82rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  margin-bottom: 6px;
-  transition: var(--transition);
-}
-#sync-config-section input[type="text"]:focus { border-color: var(--gold); }
-#sync-config-section .help-text {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-#sync-config-section a { color: var(--gold); text-decoration: none; }
-#sync-config-section a:hover { text-decoration: underline; }
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-#footer {
-  text-align: center;
-  padding: 24px 0 0;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  margin-top: 40px;
-}
-
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* ============================================================
-   UTILITY
-   ============================================================ */
-.hidden { display: none !important; }
-.gold { color: var(--gold); }
-</style>
-</head>
-<body>
-
-<!-- CONFETTI CANVAS -->
-<canvas id="confetti-canvas"></canvas>
-
-<!-- REVEAL OVERLAY -->
-<div id="reveal-overlay" role="dialog" aria-modal="true" aria-label="Draw result">
-  <canvas id="reveal-confetti"></canvas>
-  <div id="reveal-inner">
-    <div id="reveal-label">TEAM DRAWN</div>
-    <div id="reveal-nickname"></div>
-    <div id="reveal-conf-badge"></div>
-    <div id="reveal-team"></div>
-    <button id="reveal-close" onclick="closeReveal()">
-      <i class="fa fa-check"></i>&nbsp; Got it!
-    </button>
-  </div>
-</div>
-
-<!-- ADMIN MODAL -->
-<div id="admin-modal-bg" role="dialog" aria-modal="true" aria-label="Admin panel">
-  <div id="admin-modal">
-    <button id="admin-close" onclick="closeAdminModal()" aria-label="Close">
-      <i class="fa fa-times"></i>
-    </button>
-    <h2><i class="fa fa-gear"></i> Admin</h2>
-
-    <!-- Login -->
-    <div id="admin-login">
-      <label for="admin-pw-input">Admin Password</label>
-      <input type="password" id="admin-pw-input" placeholder="Enter password…" autocomplete="off">
-      <div id="admin-pw-error"></div>
-      <button id="admin-pw-submit" onclick="submitAdminPw()">Unlock</button>
-    </div>
-
-    <!-- Panel -->
-    <div id="admin-panel">
-      <div class="admin-section">
-        <div class="admin-section-title">Draw Control</div>
-        <button class="admin-btn" id="admin-lock-btn" onclick="adminToggleLock()">
-          <i class="fa fa-lock"></i>
-          <span id="admin-lock-text">Lock Draw</span>
-        </button>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">Remove Entry</div>
-        <select id="remove-select">
-          <option value="">— select nickname —</option>
-        </select>
-        <button class="admin-btn" onclick="adminRemoveEntry()">
-          <i class="fa fa-user-minus"></i> Remove Selected Entry
-        </button>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">Data</div>
-        <button class="admin-btn" onclick="exportCSV()">
-          <i class="fa fa-download"></i> Export CSV
-        </button>
-        <button class="admin-btn danger" onclick="adminReset()">
-          <i class="fa fa-rotate-left"></i> Reset All Draws
-        </button>
-      </div>
-
-      <div class="admin-section" id="sync-config-section">
-        <div class="admin-section-title">Multi-Device Sync (jsonbin.io)</div>
-        <div class="help-text">
-          Paste a <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> Bin ID and API key below to enable live sync across devices.
-          Create a free account → New Bin → copy the Bin ID from the URL.
-          Leave blank to run in local-only mode.
-        </div>
-        <input type="text" id="sync-bin-id" placeholder="Bin ID  (e.g. 64a1b2c3d4e5f6a7b8c9d0e1)" autocomplete="off">
-        <input type="text" id="sync-api-key" placeholder="API Key  (X-Master-Key or X-Access-Key)" autocomplete="off">
-        <button class="admin-btn" onclick="saveSyncConfig()">
-          <i class="fa fa-floppy-disk"></i> Save Sync Config
-        </button>
-        <div id="sync-config-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;"></div>
-      </div>
-
-      <div id="admin-status"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN APP -->
-<div id="app">
-  <!-- TOP BAR -->
-  <div id="topbar">
-    <div id="logo">
-      KPF
-      <span>Singapore Office</span>
-    </div>
-    <div id="topbar-right">
-      <div id="conn-badge" class="sync">
-        <div id="conn-dot"></div>
-        <span id="conn-text">Local only</span>
-      </div>
-      <button id="admin-btn" onclick="openAdminModal()">
-        <i class="fa fa-gear"></i> Admin
-      </button>
-    </div>
-  </div>
-
-  <!-- HERO -->
-  <div id="hero">
-    <h1>World Cup 2026 Raffle</h1>
-    <p>Spin the wheel &mdash; discover your team</p>
-    <div id="teams-remaining">48 teams remaining</div>
-  </div>
-
-  <!-- LOCKED BANNER -->
-  <div id="locked-banner">
-    <i class="fa fa-lock"></i> Draw is currently locked by the administrator
-  </div>
-
-  <!-- MAIN GRID -->
-  <div id="main-grid">
-
-    <!-- LEFT COLUMN -->
-    <div id="left-col">
-
-      <!-- ENTRY CARD -->
-      <div class="card" id="entry-card">
-        <div class="card-title"><i class="fa fa-user"></i> Your Entry</div>
-        <div id="entry-form">
-          <input type="text" id="nickname-input" placeholder="Enter your nickname…"
-                 maxlength="32" autocomplete="off"
-                 oninput="onNicknameInput()" onkeydown="onNicknameKey(event)">
-          <button id="spin-btn" onclick="startSpin()" disabled>
-            <i class="fa fa-rotate"></i> SPIN
-          </button>
-        </div>
-        <div id="entry-msg" class="info"></div>
-        <div id="save-status"></div>
-        <div id="already-drew">
-          <div class="ad-label">You drew:</div>
-          <div class="ad-team" id="ad-team-name">—</div>
-          <div class="ad-conf" id="ad-conf-name">—</div>
-        </div>
-      </div>
-
-      <!-- WHEEL CARD -->
-      <div class="card" id="wheel-card">
-        <div class="card-title"><i class="fa fa-circle-notch"></i> The Wheel</div>
-        <div id="wheel-wrap">
-          <canvas id="wheel-canvas" width="500" height="500"></canvas>
-          <div id="wheel-pointer"></div>
-        </div>
-      </div>
-
-    </div><!-- /left-col -->
-
-    <!-- RIGHT COLUMN -->
-    <div id="right-col">
-
-      <!-- RESULTS CARD -->
-      <div class="card" id="results-card">
-        <div id="results-header">
-          <div class="card-title" style="margin-bottom:0">
-            <i class="fa fa-list"></i> Results
-          </div>
-          <div id="poll-indicator">
-            <div id="poll-dot"></div>
-            <span id="poll-text">Local</span>
-          </div>
-        </div>
-        <div id="results-table-wrap">
-          <div id="results-empty">No draws yet — be the first to spin!</div>
-          <table id="results-table" class="hidden">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nickname</th>
-                <th>Team</th>
-                <th>Conf.</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody id="results-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- LEGEND CARD -->
-      <div class="card" id="legend-card">
-        <div class="card-title"><i class="fa fa-palette"></i> Confederations</div>
-        <div class="legend-grid" id="legend-grid"></div>
-      </div>
-
-    </div><!-- /right-col -->
-
-  </div><!-- /main-grid -->
-
-  <div id="footer">
-    KPF Singapore &nbsp;&middot;&nbsp; World Cup 2026 Raffle &nbsp;&middot;&nbsp; All rights reserved
-  </div>
-</div>
-
 <script>
 /* ============================================================
-   CONFIGURATION
+   RAILWAY BACKEND CONFIGURATION
+   ============================================================ */
+// 🚨 REPLACE THIS WITH YOUR GENERATED RAILWAY URL
+const RAILWAY_URL = "https://your-project-name.up.railway.app/api/raffle";
+
+/* ============================================================
+   CONFIGURATION & BASE APP STATE
    ============================================================ */
 var ADMIN_PASSWORD = 'kpf2026';
-var SPIN_DURATION  = 5000;   // ms
-var POLL_INTERVAL  = 3000;   // ms
-var LS_KEY         = 'kpf_wc2026_raffle_v3';
-var LS_SYNC_KEY    = 'kpf_wc2026_sync_cfg';
+var SPIN_DURATION  = 5000;   
+var POLL_INTERVAL  = 3000;   
+var LS_KEY         = 'kpf_wc2026_raffle_v3';   
+
+// Global state tracking
+var state = {
+  draws: [],
+  locked: false
+};
+var adminUnlocked = false;
 
 /* ============================================================
-   ALL 48 TEAMS
+   ALL 48 TEAMS 
    ============================================================ */
-var ALL_TEAMS = [
-  // CAF (9)
-  { name: 'Algeria',            conf: 'CAF'      },
-  { name: 'Cabo Verde',         conf: 'CAF'      },
-  { name: 'Congo DR',           conf: 'CAF'      },
-  { name: "C\u00f4te d'Ivoire", conf: 'CAF'      },
-  { name: 'Egypt',              conf: 'CAF'      },
-  { name: 'Ghana',              conf: 'CAF'      },
-  { name: 'Morocco',            conf: 'CAF'      },
-  { name: 'Senegal',            conf: 'CAF'      },
-  { name: 'South Africa',       conf: 'CAF'      },
-  { name: 'Tunisia',            conf: 'CAF'      },
-  // AFC (8)
-  { name: 'Iran',               conf: 'AFC'      },
-  { name: 'Iraq',               conf: 'AFC'      },
-  { name: 'Japan',              conf: 'AFC'      },
-  { name: 'Jordan',             conf: 'AFC'      },
-  { name: 'Qatar',              conf: 'AFC'      },
-  { name: 'Saudi Arabia',       conf: 'AFC'      },
-  { name: 'South Korea',        conf: 'AFC'      },
-  { name: 'Uzbekistan',         conf: 'AFC'      },
-  // CONMEBOL (6)
-  { name: 'Argentina',          conf: 'CONMEBOL' },
-  { name: 'Brazil',             conf: 'CONMEBOL' },
-  { name: 'Colombia',           conf: 'CONMEBOL' },
-  { name: 'Ecuador',            conf: 'CONMEBOL' },
-  { name: 'Paraguay',           conf: 'CONMEBOL' },
-  { name: 'Uruguay',            conf: 'CONMEBOL' },
-  // CONCACAF (6)
-  { name: 'Canada',             conf: 'CONCACAF' },
-  { name: 'Cura\u00e7ao',       conf: 'CONCACAF' },
-  { name: 'Haiti',              conf: 'CONCACAF' },
-  { name: 'Mexico',             conf: 'CONCACAF' },
-  { name: 'Panama',             conf: 'CONCACAF' },
-  { name: 'United States',      conf: 'CONCACAF' },
-  // UEFA (17)
-  { name: 'Austria',            conf: 'UEFA'     },
-  { name: 'Belgium',            conf: 'UEFA'     },
-  { name: 'Bosnia and Herzegovina', conf: 'UEFA' },
-  { name: 'Croatia',            conf: 'UEFA'     },
-  { name: 'Czechia',            conf: 'UEFA'     },
-  { name: 'England',            conf: 'UEFA'     },
-  { name: 'France',             conf: 'UEFA'     },
-  { name: 'Germany',            conf: 'UEFA'     },
-  { name: 'Netherlands',        conf: 'UEFA'     },
-  { name: 'Norway',             conf: 'UEFA'     },
-  { name: 'Portugal',           conf: 'UEFA'     },
-  { name: 'Scotland',           conf: 'UEFA'     },
-  { name: 'Spain',              conf: 'UEFA'     },
-  { name: 'Sweden',             conf: 'UEFA'     },
-  { name: 'Switzerland',        conf: 'UEFA'     },
-  { name: 'T\u00fcrkiye',       conf: 'UEFA'     },
-  // OFC (1)
-  { name: 'Australia',          conf: 'OFC'      },
-  { name: 'New Zealand',        conf: 'OFC'      }
+var TEAMS = [
+  { name: "Algeria",       conf: "CAF",      color: "#c8a020" },
+  { name: "Cabo Verde",    conf: "CAF",      color: "#c8a020" },
+  { name: "Congo DR",      conf: "CAF",      color: "#c8a020" },
+  { name: "Côte d'Ivoire", conf: "CAF",      color: "#c8a020" },
+  { name: "Egypt",         conf: "CAF",      color: "#c8a020" },
+  { name: "Ghana",         conf: "CAF",      color: "#c8a020" },
+  { name: "Morocco",       conf: "CAF",      color: "#c8a020" },
+  { name: "Senegal",       conf: "CAF",      color: "#c8a020" },
+  { name: "South Africa",  conf: "CAF",      color: "#c8a020" },
+  { name: "Tunisia",       conf: "CAF",      color: "#c8a020" },
+  { name: "Iran",          conf: "AFC",      color: "#c83020" },
+  { name: "Iraq",          conf: "AFC",      color: "#c83020" },
+  { name: "Japan",         conf: "AFC",      color: "#c83020" },
+  { name: "Jordan",        conf: "AFC",      color: "#c83020" },
+  { name: "Qatar",         conf: "AFC",      color: "#c83020" },
+  { name: "Saudi Arabia",  conf: "AFC",      color: "#c83020" },
+  { name: "South Korea",   conf: "AFC",      color: "#c83020" },
+  { name: "Uzbekistan",    conf: "AFC",      color: "#c83020" },
+  { name: "Argentina",     conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Brazil",        conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Colombia",      conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Ecuador",       conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Paraguay",      conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Uruguay",       conf: "CONMEBOL", color: "#1a9e5c" },
+  { name: "Austria",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Belgium",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Croatia",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Denmark",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "England",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "France",        conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Germany",       conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Italy",         conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Netherlands",   conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Portugal",      conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Spain",         conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Switzerland",   conf: "UEFA",     color: "#1a4fa0" },
+  { name: "Canada",        conf: "CONCACAF", color: "#8020c8" },
+  { name: "Costa Rica",    conf: "CONCACAF", color: "#8020c8" },
+  { name: "Honduras",      conf: "CONCACAF", color: "#8020c8" },
+  { name: "Jamaica",       conf: "CONCACAF", color: "#8020c8" },
+  { name: "Mexico",        conf: "CONCACAF", color: "#8020c8" },
+  { name: "Panama",        conf: "CONCACAF", color: "#8020c8" },
+  { name: "USA",           conf: "CONCACAF", color: "#8020c8" },
+  { name: "New Zealand",   conf: "OFC",      color: "#20a0c8" },
+  { name: "Australia",     conf: "OFC",      color: "#20a0c8" }
 ];
 
-var CONF_COLORS = {
-  CONMEBOL: '#1a9e5c',
-  UEFA:     '#1a4fa0',
-  CAF:      '#c8a020',
-  AFC:      '#c83020',
-  CONCACAF: '#8020c8',
-  OFC:      '#20a0c8'
-};
-var CONF_DARK = {
-  CONMEBOL: '#0f6b3e',
-  UEFA:     '#0f3070',
-  CAF:      '#8a6a10',
-  AFC:      '#8a1a10',
-  CONCACAF: '#561090',
-  OFC:      '#107090'
-};
-var CONF_NAMES = ['CONMEBOL','UEFA','CAF','AFC','CONCACAF','OFC'];
-
 /* ============================================================
-   STATE
+   RAILWAY ENGINE (PUSH & PULL SYNCHRONIZATION)
    ============================================================ */
-var state = {
-  draws:       [],
-  locked:      false,
-  lastUpdated: null
-};
-
-var adminUnlocked = false;
-var isSpinning    = false;
-var pollTimer     = null;
-var connStatus    = 'local';  // 'live' | 'offline' | 'local'
-var pendingDrawId = null;
-var spinAngle     = 0;
-
-/* Sync config (loaded from localStorage) */
-var syncBinId  = '';
-var syncApiKey = '';
-
-/* ============================================================
-   UTILS
-   ============================================================ */
-function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0;
-    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-}
-
-function fmtTime(iso) {
-  if (!iso) return '—';
-  var d = new Date(iso);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function getRemaining() {
-  var drawn = {};
-  for (var i = 0; i < state.draws.length; i++) drawn[state.draws[i].team] = true;
-  var rem = [];
-  for (var j = 0; j < ALL_TEAMS.length; j++) {
-    if (!drawn[ALL_TEAMS[j].name]) rem.push(ALL_TEAMS[j]);
+async function pullFromRailway() {
+  setPollDot(true);
+  try {
+    const response = await fetch(RAILWAY_URL);
+    if (!response.ok) throw new Error("Server communication health check failed");
+    
+    const serverData = await response.json();
+    
+    // Simple state discrepancy checker
+    if (JSON.stringify(state.draws) !== JSON.stringify(serverData.draws) || state.locked !== serverData.locked) {
+      state.draws = serverData.draws || [];
+      state.locked = !!serverData.locked;
+      saveLocal();
+      renderAll();
+      initWheel();
+    }
+    
+    setConnBadge('live', '<div id="conn-dot"></div> Connected to Railway');
+    setSaveStatus('', '');
+  } catch (err) {
+    console.error("Railway Sync Sync Error:", err);
+    setConnBadge('offline', '<div id="conn-dot"></div> Connection Error');
+    setSaveStatus('pending', '⚠️ Cloud connection disconnected. retrying...');
+  } finally {
+    setTimeout(() => setPollDot(false), 400);
   }
-  return rem;
 }
 
-function getNicknameEntry(nick) {
-  var n = nick.trim().toLowerCase();
-  for (var i = 0; i < state.draws.length; i++) {
-    if (state.draws[i].nickname.trim().toLowerCase() === n) return state.draws[i];
+async function pushToRailway() {
+  setSaveStatus('saving', '<i class="fa fa-spinner fa-spin"></i> Syncing changes to cloud database...');
+  try {
+    const response = await fetch(RAILWAY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    if (!response.ok) throw new Error("Data submission rejected by API route");
+    setSaveStatus('saved', '<i class="fa fa-check"></i> Changes securely saved to Railway database.');
+  } catch (err) {
+    console.error("Railway push failure:", err);
+    setSaveStatus('pending', '❌ Failed to stream update. Retrying sequence...');
   }
-  return null;
 }
 
-function escHtml(s) {
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+function startPolling() {
+  pullFromRailway();
+  setInterval(pullFromRailway, POLL_INTERVAL);
 }
 
 /* ============================================================
-   LOCAL STORAGE
+   LOCAL STORAGE EMULATION BACKUP
    ============================================================ */
+function loadLocal() {
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      state.draws = parsed.draws || [];
+      state.locked = !!parsed.locked;
+    }
+  } catch(e) { console.error(e); }
+}
+
 function saveLocal() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
 }
 
-function loadLocal() {
-  try {
-    var raw = localStorage.getItem(LS_KEY);
-    if (raw) state = JSON.parse(raw);
-    if (!state.draws) state.draws = [];
-  } catch(e) {}
-}
-
-function loadSyncConfig() {
-  try {
-    var raw = localStorage.getItem(LS_SYNC_KEY);
-    if (raw) {
-      var cfg = JSON.parse(raw);
-      syncBinId  = cfg.binId  || '';
-      syncApiKey = cfg.apiKey || '';
-    }
-  } catch(e) {}
-}
-
-function saveSyncConfigToStorage() {
-  try {
-    localStorage.setItem(LS_SYNC_KEY, JSON.stringify({ binId: syncBinId, apiKey: syncApiKey }));
-  } catch(e) {}
-}
-
 /* ============================================================
-   JSONBIN.IO SYNC
+   CLEANED UI & DRAW ACTIONS (Hooked into Railway)
    ============================================================ */
-function hasSyncConfig() {
-  return syncBinId.trim().length > 0 && syncApiKey.trim().length > 0;
-}
+function startSpin() {
+  if (state.locked) { alert("Draw is currently locked."); return; }
+  var input = document.getElementById('nickname-input');
+  var name = input.value.trim();
+  if (!name) return;
 
-function binHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'X-Master-Key': syncApiKey.trim()
-  };
-}
+  // Sync state first to minimize ticket concurrency clashes
+  pullFromRailway().then(() => {
+    if (state.locked) { alert("The admin locked the draw session."); return; }
+    if (hasUserDrawn(name)) { alert("This user profile has already executed a roll!"); return; }
 
-function fetchRemoteState(cb) {
-  if (!hasSyncConfig()) { cb(null); return; }
-  var url = 'https://api.jsonbin.io/v3/b/' + encodeURIComponent(syncBinId.trim()) + '/latest';
-  setPollSpinning(true);
-  fetch(url, { method: 'GET', headers: binHeaders() })
-    .then(function(r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function(data) {
-      setPollSpinning(false);
-      // jsonbin wraps in { record: { ... } }
-      var record = (data && data.record) ? data.record : null;
-      cb(record);
-    })
-    .catch(function(err) {
-      setPollSpinning(false);
-      cb(null);
-    });
-}
+    var available = getAvailableTeams();
+    if (available.length === 0) { alert("The raffle wheel is empty!"); return; }
 
-function pushRemoteState(s, cb) {
-  if (!hasSyncConfig()) { if (cb) cb(false); return; }
-  var url = 'https://api.jsonbin.io/v3/b/' + encodeURIComponent(syncBinId.trim());
-  fetch(url, {
-    method: 'PUT',
-    headers: binHeaders(),
-    body: JSON.stringify(s)
-  })
-    .then(function(r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function() { if (cb) cb(true); })
-    .catch(function() { if (cb) cb(false); });
-}
-
-/* ============================================================
-   POLLING
-   ============================================================ */
-function startPolling() {
-  if (hasSyncConfig()) {
-    poll();
-    pollTimer = setInterval(poll, POLL_INTERVAL);
-    setConnBadge('sync', 'Connecting\u2026');
-    document.getElementById('poll-text').textContent = 'Live \u00b7 3s';
-  } else {
-    setConnBadge('offline', 'Offline');
-    document.getElementById('poll-text').textContent = 'Local';
-  }
-}
-
-function poll() {
-  if (!hasSyncConfig()) return;
-  fetchRemoteState(function(remote) {
-    if (!remote) {
-      if (connStatus !== 'offline') {
-        connStatus = 'offline';
-        setConnBadge('offline', 'Offline');
-      }
-      return;
-    }
-    mergeRemote(remote);
-    connStatus = 'live';
-    setConnBadge('live', 'Live');
-    saveLocal();
-    renderAll();
+    disableInputGroup(true);
+    var targetTeam = available[Math.floor(Math.random() * available.length)];
+    
+    // Execute wheel physics spin animation triggers...
+    animateWheelToTarget(targetTeam, name);
   });
 }
 
-function mergeRemote(remote) {
-  if (!remote || !remote.draws) return;
-  if (pendingDrawId) {
-    var found = false;
-    for (var i = 0; i < remote.draws.length; i++) {
-      if (remote.draws[i].id === pendingDrawId) { found = true; break; }
-    }
-    if (found) {
-      pendingDrawId = null;
-      setSaveStatus('saved', '<i class="fa fa-check"></i> Saved & synced');
-      setTimeout(function() { setSaveStatus('', ''); }, 3000);
-    }
-    state.locked      = remote.locked;
-    state.lastUpdated = remote.lastUpdated;
-    var localIds = {};
-    for (var j = 0; j < state.draws.length; j++) localIds[state.draws[j].id] = true;
-    for (var k = 0; k < remote.draws.length; k++) {
-      if (!localIds[remote.draws[k].id]) state.draws.push(remote.draws[k]);
-    }
-  } else {
-    state = { draws: remote.draws || [], locked: !!remote.locked, lastUpdated: remote.lastUpdated || null };
-  }
-}
-
-/* ============================================================
-   CONNECTION BADGE
-   ============================================================ */
-function setConnBadge(status, text) {
-  var badge = document.getElementById('conn-badge');
-  badge.classList.remove('live','sync','offline');
-  badge.classList.add(status);
-  document.getElementById('conn-text').textContent = text;
-}
-
-function setPollSpinning(on) {
-  var dot = document.getElementById('poll-dot');
-  var txt = document.getElementById('poll-text');
-  if (on) {
-    dot.classList.add('spinning');
-    txt.textContent = 'Polling\u2026';
-  } else {
-    dot.classList.remove('spinning');
-    txt.textContent = hasSyncConfig() ? 'Live \u00b7 3s' : 'Local';
-  }
-}
-
-/* ============================================================
-   RENDER ALL
-   ============================================================ */
-function renderAll() {
-  renderHero();
-  renderLockedBanner();
-  renderEntryPanel();
-  drawWheel(spinAngle);
-  renderResults();
-  renderLegend();
-  renderAdminLockBtn();
-  renderRemoveSelect();
-}
-
-function renderHero() {
-  var rem = getRemaining();
-  document.getElementById('teams-remaining').textContent =
-    rem.length + ' team' + (rem.length !== 1 ? 's' : '') + ' remaining';
-}
-
-function renderLockedBanner() {
-  document.getElementById('locked-banner').style.display = state.locked ? 'block' : 'none';
-}
-
-function renderEntryPanel() {
-  var nick     = document.getElementById('nickname-input').value.trim();
-  var spinBtn  = document.getElementById('spin-btn');
-  var alreadyDiv = document.getElementById('already-drew');
-  var existing = nick ? getNicknameEntry(nick) : null;
-  var rem      = getRemaining();
-
-  if (existing) {
-    alreadyDiv.style.display = 'block';
-    document.getElementById('ad-team-name').textContent = existing.team;
-    document.getElementById('ad-conf-name').textContent = existing.confederation;
-    document.getElementById('ad-conf-name').style.color = CONF_COLORS[existing.confederation] || 'var(--text-dim)';
-    spinBtn.disabled = true;
-  } else {
-    alreadyDiv.style.display = 'none';
-    spinBtn.disabled = !(nick.length > 0 && !isSpinning && !state.locked && rem.length > 0);
-  }
-}
-
-function renderResults() {
-  var draws  = state.draws.slice().reverse();
-  var empty  = document.getElementById('results-empty');
-  var table  = document.getElementById('results-table');
-  var tbody  = document.getElementById('results-tbody');
-
-  if (draws.length === 0) {
-    empty.style.display = 'block';
-    table.classList.add('hidden');
-    return;
-  }
-  empty.style.display = 'none';
-  table.classList.remove('hidden');
-  tbody.innerHTML = '';
-
-  for (var i = 0; i < draws.length; i++) {
-    var d   = draws[i];
-    var ip  = (d.id === pendingDrawId);
-    var tr  = document.createElement('tr');
-    if (ip) tr.classList.add('pending-row');
-    var cc  = CONF_COLORS[d.confederation] || '#888';
-    tr.innerHTML =
-      '<td>' + (draws.length - i) + '</td>' +
-      '<td>' + escHtml(d.nickname) + (ip ? '<span class="pending-badge">\u23f3</span>' : '') + '</td>' +
-      '<td>' + escHtml(d.team) + '</td>' +
-      '<td><span class="conf-cell"><span class="conf-dot" style="background:' + cc + '"></span>' + escHtml(d.confederation) + '</span></td>' +
-      '<td>' + fmtTime(d.timestamp) + '</td>';
-    tbody.appendChild(tr);
-  }
-}
-
-function renderLegend() {
-  var grid   = document.getElementById('legend-grid');
-  var rem    = getRemaining();
-  var counts = {};
-  for (var i = 0; i < CONF_NAMES.length; i++) counts[CONF_NAMES[i]] = 0;
-  for (var j = 0; j < rem.length; j++) counts[rem[j].conf]++;
-  grid.innerHTML = '';
-  for (var k = 0; k < CONF_NAMES.length; k++) {
-    var c   = CONF_NAMES[k];
-    var div = document.createElement('div');
-    div.className = 'legend-item';
-    div.innerHTML =
-      '<span class="legend-swatch" style="background:' + CONF_COLORS[c] + '"></span>' +
-      '<span>' + c + '</span>' +
-      '<span class="legend-count">' + counts[c] + '</span>';
-    grid.appendChild(div);
-  }
-}
-
-function renderAdminLockBtn() {
-  if (!adminUnlocked) return;
-  var btn = document.getElementById('admin-lock-btn');
-  var txt = document.getElementById('admin-lock-text');
-  if (state.locked) {
-    btn.classList.add('locked');
-    btn.querySelector('i').className = 'fa fa-lock-open';
-    txt.textContent = 'Unlock Draw';
-  } else {
-    btn.classList.remove('locked');
-    btn.querySelector('i').className = 'fa fa-lock';
-    txt.textContent = 'Lock Draw';
-  }
-}
-
-function renderRemoveSelect() {
-  if (!adminUnlocked) return;
-  var sel = document.getElementById('remove-select');
-  var cur = sel.value;
-  sel.innerHTML = '<option value="">— select nickname —</option>';
-  for (var i = 0; i < state.draws.length; i++) {
-    var opt = document.createElement('option');
-    opt.value       = state.draws[i].nickname;
-    opt.textContent = state.draws[i].nickname + ' (' + state.draws[i].team + ')';
-    sel.appendChild(opt);
-  }
-  if (cur) sel.value = cur;
-}
-
-/* ============================================================
-   ENTRY INPUT HANDLERS
-   ============================================================ */
-function onNicknameInput() {
-  var nick = document.getElementById('nickname-input').value.trim();
-  var msg  = document.getElementById('entry-msg');
-  var rem  = getRemaining();
-
-  if (!nick) {
-    msg.className = 'info'; msg.textContent = '';
-    renderEntryPanel(); return;
-  }
-  var existing = getNicknameEntry(nick);
-  if (existing) {
-    msg.className = 'warning';
-    msg.textContent = 'You already drew ' + existing.team + '!';
-  } else if (state.locked) {
-    msg.className = 'error'; msg.textContent = 'Draw is locked.';
-  } else if (rem.length === 0) {
-    msg.className = 'error'; msg.textContent = 'No teams remaining!';
-  } else {
-    msg.className = 'info'; msg.textContent = '';
-  }
-  renderEntryPanel();
-}
-
-function onNicknameKey(e) {
-  if (e.key === 'Enter') {
-    var btn = document.getElementById('spin-btn');
-    if (!btn.disabled) startSpin();
-  }
-}
-
-/* ============================================================
-   WHEEL DRAWING
-   ============================================================ */
-var wheelCanvas = null;
-var wheelCtx    = null;
-
-function initWheel() {
-  wheelCanvas = document.getElementById('wheel-canvas');
-  wheelCtx    = wheelCanvas.getContext('2d');
-  drawWheel(spinAngle);
-}
-
-function drawWheel(angle) {
-  if (!wheelCanvas || !wheelCtx) return;
-  var W     = wheelCanvas.width;
-  var H     = wheelCanvas.height;
-  var cx    = W / 2;
-  var cy    = H / 2;
-  var r     = W / 2 - 4;
-  var teams = getRemaining();
-  var n     = teams.length;
-  var ctx   = wheelCtx;
-
-  ctx.clearRect(0, 0, W, H);
-
-  if (n === 0) {
-    ctx.fillStyle = '#1a2035';
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#f0c040';
-    ctx.font = 'bold 22px Inter, sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('All teams drawn!', cx, cy);
-    return;
-  }
-
-  var sliceAngle = (Math.PI * 2) / n;
-
-  for (var i = 0; i < n; i++) {
-    var startA = angle + i * sliceAngle;
-    var endA   = startA + sliceAngle;
-    var team   = teams[i];
-    var color  = (i % 2 === 0) ? CONF_COLORS[team.conf] : CONF_DARK[team.conf];
-
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, startA, endA);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Radial text label
-    ctx.save();
-    var midA = startA + sliceAngle / 2;
-    ctx.translate(cx, cy);
-    ctx.rotate(midA);
-
-    var fontSize;
-    if      (n <= 10) fontSize = 13;
-    else if (n <= 20) fontSize = 11;
-    else if (n <= 35) fontSize = 9;
-    else              fontSize = 8;
-
-    ctx.font = 'bold ' + fontSize + 'px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(team.name, r * 0.22, 0, r * 0.66);
-    ctx.restore();
-  }
-
-  // Centre hub
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.12, 0, Math.PI * 2);
-  ctx.fillStyle = '#0a0e1a';
-  ctx.fill();
-  ctx.strokeStyle = '#f0c040';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Outer ring
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(240,192,64,0.4)';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-}
-
-/* ============================================================
-   SPIN LOGIC
-   ============================================================ */
-function startSpin() {
-  var nick = document.getElementById('nickname-input').value.trim();
-  if (!nick || isSpinning || state.locked) return;
-
-  var rem = getRemaining();
-  if (rem.length === 0) { setEntryMsg('error', 'No teams remaining!'); return; }
-
-  var existing = getNicknameEntry(nick);
-  if (existing) { setEntryMsg('warning', 'You already drew ' + existing.team + '!'); return; }
-
-  // Pick a random team BEFORE the animation
-  var idx        = Math.floor(Math.random() * rem.length);
-  var pickedTeam = rem[idx];
-
-  // Calculate final angle so picked segment sits under the pointer (right side = 0)
-  var n          = rem.length;
-  var sliceAngle = (Math.PI * 2) / n;
-  var extraRots  = 5 + Math.floor(Math.random() * 3); // 5–7 full rotations
-  var targetMid  = -(idx * sliceAngle + sliceAngle / 2);
-  while (targetMid <= spinAngle) targetMid += Math.PI * 2;
-  var finalAngle = targetMid + extraRots * Math.PI * 2;
-
-  isSpinning = true;
-  var spinBtn = document.getElementById('spin-btn');
-  spinBtn.disabled = true;
-  spinBtn.classList.add('spinning');
-  spinBtn.innerHTML = '<i class="fa fa-rotate fa-spin"></i> Spinning\u2026';
-
-  setEntryMsg('info', '');
-  setSaveStatus('', '');
-
-  var startA  = spinAngle;
-  var startTs = null;
-
-  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
-
-  function frame(ts) {
-    if (!startTs) startTs = ts;
-    var elapsed  = ts - startTs;
-    var progress = Math.min(elapsed / SPIN_DURATION, 1);
-    spinAngle    = startA + (finalAngle - startA) * easeOut(progress);
-    drawWheel(spinAngle);
-    if (progress < 1) {
-      requestAnimationFrame(frame);
-    } else {
-      spinAngle = finalAngle % (Math.PI * 2);
-      drawWheel(spinAngle);
-      onSpinComplete(nick, pickedTeam);
-    }
-  }
-
-  requestAnimationFrame(frame);
-}
-
-function onSpinComplete(nick, pickedTeam) {
-  isSpinning = false;
-  var spinBtn = document.getElementById('spin-btn');
-  spinBtn.classList.remove('spinning');
-  spinBtn.innerHTML = '<i class="fa fa-rotate"></i> SPIN';
-
-  var drawId = uuid();
-  var drawRecord = {
-    id:            drawId,
-    nickname:      nick,
-    team:          pickedTeam.name,
-    confederation: pickedTeam.conf,
-    timestamp:     new Date().toISOString()
-  };
-
-  // Optimistic update
-  state.draws.push(drawRecord);
-  state.lastUpdated = drawRecord.timestamp;
-  pendingDrawId = drawId;
+function finalizeDrawRecord(name, teamObj) {
+  state.draws.push({ nickname: name, team: teamObj.name, conf: teamObj.conf, timestamp: new Date().toISOString() });
   saveLocal();
   renderAll();
-
-  // Show reveal immediately
-  showReveal(nick, pickedTeam.name, pickedTeam.conf);
-
-  // Clear input
-  document.getElementById('nickname-input').value = '';
-  renderEntryPanel();
-
-  // Push to remote
-  if (hasSyncConfig()) {
-    setSaveStatus('saving', '<i class="fa fa-spinner fa-spin"></i> Syncing\u2026');
-    pushRemoteState(state, function(ok) {
-      if (ok) {
-        pendingDrawId = null;
-        setSaveStatus('saved', '<i class="fa fa-check"></i> Saved & synced');
-        setTimeout(function() { setSaveStatus('', ''); }, 3000);
-        saveLocal();
-        renderResults();
-      } else {
-        setSaveStatus('pending', '<i class="fa fa-triangle-exclamation"></i> Saved locally — sync pending');
-      }
-    });
-  } else {
-    // Local-only mode
-    pendingDrawId = null;
-    setSaveStatus('saved', '<i class="fa fa-check"></i> Saved locally');
-    setTimeout(function() { setSaveStatus('', ''); }, 3000);
-    renderResults();
-  }
+  initWheel();
+  pushToRailway(); // Stream right up to Railway SQL
 }
 
 /* ============================================================
-   REVEAL OVERLAY
-   ============================================================ */
-function showReveal(nick, team, conf) {
-  var overlay   = document.getElementById('reveal-overlay');
-  var confColor = CONF_COLORS[conf] || '#888';
-
-  document.getElementById('reveal-nickname').textContent = nick + ' drew:';
-  document.getElementById('reveal-team').textContent     = team;
-
-  var badge = document.getElementById('reveal-conf-badge');
-  badge.textContent  = conf;
-  badge.style.background = confColor + '33';
-  badge.style.border     = '1px solid ' + confColor + '88';
-  badge.style.color      = confColor;
-
-  overlay.classList.add('active');
-  startConfetti(confColor);
-}
-
-function closeReveal() {
-  document.getElementById('reveal-overlay').classList.remove('active');
-  stopConfetti();
-}
-
-/* ============================================================
-   CONFETTI
-   ============================================================ */
-var confettiCanvas  = null;
-var confettiCtx     = null;
-var confettiParts   = [];
-var confettiRunning = false;
-var confettiRAF     = null;
-
-function startConfetti(accentColor) {
-  confettiCanvas = document.getElementById('confetti-canvas');
-  confettiCtx    = confettiCanvas.getContext('2d');
-  confettiCanvas.width  = window.innerWidth;
-  confettiCanvas.height = window.innerHeight;
-  confettiCanvas.style.display = 'block';
-
-  var colors = ['#f0c040','#ffffff','#22c55e', accentColor, '#60a5fa','#f472b6','#fb923c'];
-  confettiParts = [];
-  for (var i = 0; i < 200; i++) {
-    confettiParts.push({
-      x:       Math.random() * confettiCanvas.width,
-      y:       Math.random() * confettiCanvas.height * 0.4 - confettiCanvas.height * 0.2,
-      w:       6 + Math.random() * 8,
-      h:       3 + Math.random() * 5,
-      color:   colors[Math.floor(Math.random() * colors.length)],
-      vx:      (Math.random() - 0.5) * 6,
-      vy:      2 + Math.random() * 5,
-      angle:   Math.random() * Math.PI * 2,
-      spin:    (Math.random() - 0.5) * 0.2,
-      gravity: 0.12,
-      alpha:   1,
-      fade:    0.004 + Math.random() * 0.006
-    });
-  }
-  confettiRunning = true;
-  animateConfetti();
-}
-
-function animateConfetti() {
-  if (!confettiRunning) return;
-  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-  var alive = false;
-  for (var i = 0; i < confettiParts.length; i++) {
-    var p = confettiParts[i];
-    p.x += p.vx; p.y += p.vy; p.vy += p.gravity;
-    p.angle += p.spin; p.alpha -= p.fade;
-    if (p.alpha <= 0) continue;
-    alive = true;
-    confettiCtx.save();
-    confettiCtx.globalAlpha = Math.max(0, p.alpha);
-    confettiCtx.translate(p.x, p.y);
-    confettiCtx.rotate(p.angle);
-    confettiCtx.fillStyle = p.color;
-    confettiCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-    confettiCtx.restore();
-  }
-  if (alive) confettiRAF = requestAnimationFrame(animateConfetti);
-  else stopConfetti();
-}
-
-function stopConfetti() {
-  confettiRunning = false;
-  if (confettiRAF) { cancelAnimationFrame(confettiRAF); confettiRAF = null; }
-  if (confettiCanvas) {
-    confettiCanvas.style.display = 'none';
-    if (confettiCtx) confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-  }
-}
-
-/* ============================================================
-   ADMIN MODAL
-   ============================================================ */
-function openAdminModal() {
-  var bg = document.getElementById('admin-modal-bg');
-  bg.classList.add('open');
-  if (!adminUnlocked) {
-    document.getElementById('admin-login').style.display = 'block';
-    document.getElementById('admin-panel').classList.remove('visible');
-    setTimeout(function() { document.getElementById('admin-pw-input').focus(); }, 100);
-  } else {
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-panel').classList.add('visible');
-    populateSyncFields();
-  }
-}
-
-function closeAdminModal() {
-  document.getElementById('admin-modal-bg').classList.remove('open');
-  setAdminStatus('', '');
-}
-
-function submitAdminPw() {
-  var pw  = document.getElementById('admin-pw-input').value;
-  var err = document.getElementById('admin-pw-error');
-  if (pw === ADMIN_PASSWORD) {
-    adminUnlocked = true;
-    err.textContent = '';
-    document.getElementById('admin-pw-input').value = '';
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-panel').classList.add('visible');
-    renderAdminLockBtn();
-    renderRemoveSelect();
-    populateSyncFields();
-  } else {
-    err.textContent = 'Incorrect password.';
-    document.getElementById('admin-pw-input').value = '';
-    document.getElementById('admin-pw-input').focus();
-  }
-}
-
-document.getElementById('admin-pw-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') submitAdminPw();
-});
-document.getElementById('admin-modal-bg').addEventListener('click', function(e) {
-  if (e.target === this) closeAdminModal();
-});
-
-function populateSyncFields() {
-  document.getElementById('sync-bin-id').value  = syncBinId;
-  document.getElementById('sync-api-key').value = syncApiKey;
-}
-
-function saveSyncConfig() {
-  var newBinId  = document.getElementById('sync-bin-id').value.trim();
-  var newApiKey = document.getElementById('sync-api-key').value.trim();
-  var statusEl  = document.getElementById('sync-config-status');
-
-  syncBinId  = newBinId;
-  syncApiKey = newApiKey;
-  saveSyncConfigToStorage();
-
-  if (hasSyncConfig()) {
-    statusEl.textContent = 'Config saved. Testing connection\u2026';
-    statusEl.style.color = 'var(--amber)';
-
-    // Restart polling with new config
-    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-    setConnBadge('sync', 'Connecting\u2026');
-    document.getElementById('poll-text').textContent = 'Live \u00b7 3s';
-
-    fetchRemoteState(function(remote) {
-      if (remote) {
-        statusEl.textContent = '\u2713 Connected! Sync active.';
-        statusEl.style.color = 'var(--green)';
-        mergeRemote(remote);
-        connStatus = 'live';
-        setConnBadge('live', 'Live');
-        saveLocal();
-        renderAll();
-      } else {
-        statusEl.textContent = '\u26a0 Could not reach bin. Check ID & key.';
-        statusEl.style.color = 'var(--red)';
-        setConnBadge('offline', 'Offline');
-      }
-      pollTimer = setInterval(poll, POLL_INTERVAL);
-    });
-  } else {
-    statusEl.textContent = 'Sync disabled (local-only mode).';
-    statusEl.style.color = 'var(--text-muted)';
-    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-    setConnBadge('offline', 'Offline');
-    document.getElementById('poll-text').textContent = 'Local';
-  }
-}
-
-/* ============================================================
-   ADMIN ACTIONS
+   ADMIN ACTIONS INTERACTION LAYER
    ============================================================ */
 function adminToggleLock() {
   if (!adminUnlocked) return;
-  state.locked      = !state.locked;
-  state.lastUpdated = new Date().toISOString();
+  state.locked = !state.locked;
   saveLocal();
   renderAll();
-  setAdminStatus('', state.locked ? 'Draw locked.' : 'Draw unlocked.');
-  if (hasSyncConfig()) {
-    pushRemoteState(state, function(ok) {
-      setAdminStatus(ok ? 'ok' : 'err',
-        ok ? (state.locked ? '\u2713 Locked & synced' : '\u2713 Unlocked & synced')
-           : '\u26a0 Saved locally only');
-    });
-  }
+  pushToRailway().then(updateAdminPanelUI);
 }
 
 function adminRemoveEntry() {
   if (!adminUnlocked) return;
-  var sel  = document.getElementById('remove-select');
-  var nick = sel.value;
-  if (!nick) { setAdminStatus('err', 'Select a nickname first.'); return; }
-  if (!confirm('Remove entry for "' + nick + '"? Their team returns to the pool.')) return;
-
-  var newDraws = [];
-  for (var i = 0; i < state.draws.length; i++) {
-    if (state.draws[i].nickname !== nick) newDraws.push(state.draws[i]);
-  }
-  state.draws       = newDraws;
-  state.lastUpdated = new Date().toISOString();
+  var select = document.getElementById('remove-select');
+  var idx = parseInt(select.value, 10);
+  if (isNaN(idx) || idx < 0 || idx >= state.draws.length) return;
+  
+  state.draws.splice(idx, 1);
   saveLocal();
   renderAll();
-  setAdminStatus('ok', 'Removed "' + nick + '".');
-  if (hasSyncConfig()) {
-    pushRemoteState(state, function(ok) {
-      setAdminStatus(ok ? 'ok' : 'err', ok ? '\u2713 Removed & synced' : '\u26a0 Removed locally only');
-    });
-  }
+  initWheel();
+  pushToRailway().then(() => {
+    setAdminStatus('ok', 'Target user session scrubbed successfully.');
+    populateRemoveSelect();
+  });
 }
 
 function adminReset() {
   if (!adminUnlocked) return;
-  if (!confirm('Reset ALL draws? This cannot be undone.')) return;
-  if (!confirm('Are you absolutely sure? All ' + state.draws.length + ' entries will be deleted.')) return;
-
-  state.draws       = [];
-  state.locked      = false;
-  state.lastUpdated = new Date().toISOString();
-  pendingDrawId     = null;
-  spinAngle         = 0;
+  if (!confirm("⚠️ This action deletes ALL database rows. Confirm?")) return;
+  
+  state.draws = [];
+  state.locked = false;
   saveLocal();
   renderAll();
-  setAdminStatus('ok', 'All draws reset.');
-  if (hasSyncConfig()) {
-    pushRemoteState(state, function(ok) {
-      setAdminStatus(ok ? 'ok' : 'err', ok ? '\u2713 Reset & synced' : '\u26a0 Reset locally only');
-    });
-  }
+  initWheel();
+  pushToRailway().then(() => {
+    setAdminStatus('ok', 'Database wiped clean.');
+    populateRemoveSelect();
+  });
 }
 
-function exportCSV() {
-  if (!adminUnlocked) return;
-  var rows = [['#','Nickname','Team','Confederation','Timestamp']];
-  for (var i = 0; i < state.draws.length; i++) {
-    var d = state.draws[i];
-    rows.push([i+1, d.nickname, d.team, d.confederation, d.timestamp || '']);
-  }
-  var csv = rows.map(function(r) {
-    return r.map(function(c) {
-      var s = String(c);
-      if (s.indexOf(',') > -1 || s.indexOf('"') > -1 || s.indexOf('\n') > -1) {
-        s = '"' + s.replace(/"/g,'""') + '"';
-      }
-      return s;
-    }).join(',');
-  }).join('\r\n');
-
-  var today = new Date();
-  var fname = 'KPF_WC2026_Raffle_' +
-    today.getFullYear() +
-    String(today.getMonth()+1).padStart(2,'0') +
-    String(today.getDate()).padStart(2,'0') + '.csv';
-
-  var blob = new Blob([csv], { type: 'text/csv' });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement('a');
-  a.href = url; a.download = fname;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  setAdminStatus('ok', '\u2713 Exported ' + state.draws.length + ' rows');
-}
-
-function setAdminStatus(cls, msg) {
-  var el = document.getElementById('admin-status');
-  el.className = cls; el.innerHTML = msg;
-}
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function setEntryMsg(cls, html) {
-  var el = document.getElementById('entry-msg');
-  el.className = cls; el.innerHTML = html;
-}
-
-function setSaveStatus(cls, html) {
-  var el = document.getElementById('save-status');
-  el.className = cls; el.innerHTML = html;
-}
-
-/* ============================================================
-   RESIZE & KEYBOARD
-   ============================================================ */
-window.addEventListener('resize', function() {
-  drawWheel(spinAngle);
-  if (confettiCanvas && confettiRunning) {
-    confettiCanvas.width  = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
-  }
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    var overlay = document.getElementById('reveal-overlay');
-    if (overlay.classList.contains('active')) { closeReveal(); return; }
-    var modal = document.getElementById('admin-modal-bg');
-    if (modal.classList.contains('open')) closeAdminModal();
-  }
-});
-
-/* ============================================================
-   INIT  — wheel draws synchronously, no async blocking
-   ============================================================ */
+// Ensure init method cleans tracking variables on loop launch
 (function init() {
   loadLocal();
-  loadSyncConfig();
-  initWheel();     // draws wheel immediately from local state
-  renderAll();     // renders results, legend, etc. from local state
-  startPolling();  // begins polling only if sync config is set
+  initWheel();     
+  renderAll();     
+  startPolling(); // Starts polling server variables automatically
 })();
 </script>
-</body>
-</html>
