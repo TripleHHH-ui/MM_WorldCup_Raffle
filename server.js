@@ -6,10 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Enable CORS so your Hugging Face Space can talk to this server
-app.use(cors({ origin: [
-  'https://hhhtripleh-mm-world-cup-wheel.hf.space',
-  'http://localhost:3000']
-  }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // Connect to Railway's PostgreSQL database using the environment variable
